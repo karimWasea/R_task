@@ -1,0 +1,17 @@
+﻿<!-- Views/Department/SubDepartments.cshtml -->
+@model IEnumerable<ViewModel.DepartmentVm>
+
+@{
+    ViewData["Title"] = "Sub Departments";
+}
+
+<h2>Sub Departments</h2>
+
+<ul>
+    @foreach (var subDept in Model)
+    {
+        <li>@subDept.Name</li>
+    }
+</ul>
+
+<a href="@Url.Action("Details", "Department")">Back to Details</a>

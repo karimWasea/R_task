@@ -1,0 +1,22 @@
+﻿@model ViewModel.DepartmentDetailsViewModel
+
+@* <h1>@Model.Department.Name</h1>
+<img src="@Model.Department.Logo" alt="Department Logo" /> *@
+
+<h2>Parent Departments</h2>
+<ul>
+    @foreach (var parent in Model.ParentDepartments)
+    {
+        <li>@parent.Name</li>
+        <a href="@Url.Action("ParentDepartments", "Department", new { id = parent.DepartmentID })"> Details</a>
+    }
+</ul>
+
+<h2>Sub-Departments</h2>
+<ul>
+    @foreach (var subDepartment in Model.SubDepartments)
+    {
+        <li>@subDepartment.Name</li>
+        <a href="@Url.Action("SubDepartments", "Department", new { id = subDepartment.DepartmentID })">  Details</a>
+    }
+</ul>
