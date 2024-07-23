@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataACesslayer.Migrations
 {
     [DbContext(typeof(ApplicationDBcontext))]
-    [Migration("20240723202424_um")]
-    partial class um
+    [Migration("20240723233600_iko")]
+    partial class iko
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -143,6 +143,22 @@ namespace DataACesslayer.Migrations
                             DepartmentID = 3,
                             Logo = "budgeting-logo.png",
                             Name = "Budgeting"
+                        },
+                        new
+                        {
+                            SubDepartmentID = 7,
+                            DepartmentID = 1,
+                            Logo = "campus-recruitment-logo.png",
+                            Name = "Campus Recruitment",
+                            ParentID = 1
+                        },
+                        new
+                        {
+                            SubDepartmentID = 8,
+                            DepartmentID = 1,
+                            Logo = "corporate-relations-logo.png",
+                            Name = "Corporate Relations",
+                            ParentID = 2
                         });
                 });
 

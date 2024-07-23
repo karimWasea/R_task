@@ -7,7 +7,7 @@
 namespace DataACesslayer.Migrations
 {
     /// <inheritdoc />
-    public partial class um : Migration
+    public partial class iko : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -79,7 +79,9 @@ namespace DataACesslayer.Migrations
                     { 3, 2, "software-development-logo.png", "Software Development", null },
                     { 4, 2, "it-support-logo.png", "IT Support", null },
                     { 5, 3, "accounting-logo.png", "Accounting", null },
-                    { 6, 3, "budgeting-logo.png", "Budgeting", null }
+                    { 6, 3, "budgeting-logo.png", "Budgeting", null },
+                    { 7, 1, "campus-recruitment-logo.png", "Campus Recruitment", 1 },
+                    { 8, 1, "corporate-relations-logo.png", "Corporate Relations", 2 }
                 });
 
             migrationBuilder.CreateIndex(

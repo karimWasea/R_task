@@ -140,6 +140,22 @@ namespace DataACesslayer.Migrations
                             DepartmentID = 3,
                             Logo = "budgeting-logo.png",
                             Name = "Budgeting"
+                        },
+                        new
+                        {
+                            SubDepartmentID = 7,
+                            DepartmentID = 1,
+                            Logo = "campus-recruitment-logo.png",
+                            Name = "Campus Recruitment",
+                            ParentID = 1
+                        },
+                        new
+                        {
+                            SubDepartmentID = 8,
+                            DepartmentID = 1,
+                            Logo = "corporate-relations-logo.png",
+                            Name = "Corporate Relations",
+                            ParentID = 2
                         });
                 });
 
