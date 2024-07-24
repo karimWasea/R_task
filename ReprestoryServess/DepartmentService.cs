@@ -1,9 +1,14 @@
-﻿using DataACesslayer;
+﻿using DataAccessLayer;
+
+using DataACesslayer;
 
 using IReprosastory;
 
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32;
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,107 +25,93 @@ namespace ReprestoryServess
         {
             _context = context;
         }
-
-        public async Task<List<DepartmentVm>> GetAllDepartmentsAsync()
+        public async Task<List<DepartmentVm>> GetDepartmentsAsync()
         {
-            var departments = await _context.Departments.ToListAsync();
-            var departmentVms = departments.Select(d => new DepartmentVm
+            var departments = await _context.Departments
+                .Include(d => d.SubDepartments)
+                .ToListAsync();
+
+            return departments.Select(d => new DepartmentVm
             {
-                DepartmentID = d.DepartmentID,
+                Id = d.Id,
                 Name = d.Name,
-                Logo = d.Logo
-
+                Logo = d.Logo,
+                ParentDepartmentId = d.ParentDepartmentId,
+                ParentDepartmentName = d.ParentDepartment?.Name,
+                SubDepartments = d.SubDepartments.Select(sd => new DepartmentVm
+                {
+                    Id = sd.Id,
+                    Name = sd.Name,
+                    Logo = sd.Logo,
+                    ParentDepartmentId = sd.ParentDepartmentId,
+                    ParentDepartmentName = sd.ParentDepartment?.Name
+                }).ToList()
             }).ToList();
-
-            return departmentVms;
         }
 
         public async Task<DepartmentVm> GetDepartmentByIdAsync(int id)
         {
             var department = await _context.Departments
                 .Include(d => d.SubDepartments)
-                .ThenInclude(sd => sd.SubDepartments)
-                .Include(d => d.ChildDepartments) // Include child departments if needed
-                .SingleOrDefaultAsync(d => d.DepartmentID == id);
+                .Include(d => d.ParentDepartment)
+                .FirstOrDefaultAsync(d => d.Id == id);
 
-            return department == null ? null : ToDepartmentVm(department);
-        }
+            if (department == null) return null;
 
-        public async Task<List<DepartmentVm>> GetParentDepartmentsAsync(int departmentId)
-        {
-            var department = await _context.Departments
-                .Include(d => d.ParentDepartment) // Ensure ParentDepartment is included
-                .SingleOrDefaultAsync(d => d.DepartmentID == departmentId);
-
-            var parents = new List<DepartmentVm>();
-            while (department != null)
-            {
-                parents.Add(ToDepartmentVm(department));
-                department = await _context.Departments
-                    .SingleOrDefaultAsync(d => d.DepartmentID == department.ParentDepartmentID); // Access ParentDepartmentID
-            }
-            parents.Reverse();
-            return parents;
-        }
-
-        public async Task<List<DepartmentVm>> GetSubDepartmentsAsync(int departmentId)
-        {
-            var department = await _context.Departments
-                .Include(d => d.SubDepartments)
-                .SingleOrDefaultAsync(d => d.DepartmentID == departmentId);
-
-            return department?.SubDepartments
-                .Select(sd => ToSubDepartmentVm(sd))
-                .ToList() ?? new List<DepartmentVm>();
-        }
-
-        private DepartmentVm ToDepartmentVm(Department department)
-        {
             return new DepartmentVm
             {
-                DepartmentID = department.DepartmentID,
+                Id = department.Id,
                 Name = department.Name,
                 Logo = department.Logo,
-                SubDepartments = department.SubDepartments?.Select(sd => ToSubDepartmentVm(sd)).ToList()
+                ParentDepartmentId = department.ParentDepartmentId,
+                ParentDepartmentName = department.ParentDepartment?.Name,
+                SubDepartments = department.SubDepartments.Select(sd => new DepartmentVm
+                {
+                    Id = sd.Id,
+                    Name = sd.Name,
+                    Logo = sd.Logo,
+                    ParentDepartmentId = sd.ParentDepartmentId,
+                    ParentDepartmentName = sd.ParentDepartment?.Name
+                }).ToList()
             };
         }
 
-        private DepartmentVm ToSubDepartmentVm(SubDepartment subDepartment)
+        public async Task CreateDepartmentAsync(DepartmentVm departmentVm)
         {
-            return new DepartmentVm
+            var department = new Department
             {
-                DepartmentID = subDepartment.SubDepartmentID,
-                Name = subDepartment.Name,
-                Logo = subDepartment.Logo
+                Name = departmentVm.Name,
+                Logo = departmentVm.Logo,
+                ParentDepartmentId = departmentVm.ParentDepartmentId
             };
+
+            _context.Departments.Add(department);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateDepartmentAsync(DepartmentVm departmentVm)
+        {
+            var department = await _context.Departments.FindAsync(departmentVm.Id);
+
+            if (department == null) return;
+
+            department.Name = departmentVm.Name;
+            department.Logo = departmentVm.Logo;
+            department.ParentDepartmentId = departmentVm.ParentDepartmentId;
+
+            _context.Departments.Update(department);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteDepartmentAsync(int id)
+        {
+            var department = await _context.Departments.FindAsync(id);
+
+            if (department == null) return;
+
+            _context.Departments.Remove(department);
+            await _context.SaveChangesAsync();
         }
     }
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

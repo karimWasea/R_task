@@ -4,10 +4,11 @@ namespace IReprosastory
 {
     public interface IDepartmentService
     {
+        Task<List<DepartmentVm>> GetDepartmentsAsync();
         Task<DepartmentVm> GetDepartmentByIdAsync(int id);
-        Task<List<DepartmentVm>> GetAllDepartmentsAsync();
-            Task<List<DepartmentVm>> GetParentDepartmentsAsync(int departmentId);
-        Task<List<DepartmentVm>> GetSubDepartmentsAsync(int departmentId);
+        Task CreateDepartmentAsync(DepartmentVm departmentVm);
+        Task UpdateDepartmentAsync(DepartmentVm departmentVm);
+        Task DeleteDepartmentAsync(int id);
     }
 }
 

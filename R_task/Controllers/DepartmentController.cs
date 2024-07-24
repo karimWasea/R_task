@@ -1,7 +1,12 @@
  
 
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+
 using ReprestoryServess;
+
+using System.Data.Entity.Infrastructure;
+
 using ViewModel;
 
 public class DepartmentController : Controller
@@ -13,52 +18,136 @@ public class DepartmentController : Controller
         _UnitOfWork = UnitOfWork;
     }
 
-    [HttpGet]
-    // Action to display all departments
-    public async Task<IActionResult> Index()
-    {
-        var departments = await _UnitOfWork._departmentService.GetAllDepartmentsAsync();
-        return View(departments);
-    }
+  
 
-    [HttpGet]
-    // Action to display details of a department
-    public async Task<IActionResult> Details(int id)
-    {
-        var department = await _UnitOfWork._departmentService.GetDepartmentByIdAsync(id);
-
-        if (department == null)
+        // GET: Departments
+        public async Task<IActionResult> Index()
         {
-            return NotFound();
+            var departments = await _UnitOfWork. _departmentService.GetDepartmentsAsync();
+            return View(departments);
         }
 
-        // Fetch the parent departments and sub-departments
-        var parents = await _UnitOfWork._departmentService.GetParentDepartmentsAsync(id);
-        var subDepartments = await _UnitOfWork._departmentService.GetSubDepartmentsAsync(id);
-
-        var model = new DepartmentDetailsViewModel
+        // GET: Departments/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
-            Department = department,
-            SubDepartments = subDepartments,
-            ParentDepartments = parents
-        };
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-        return View(model);
-    }
+            var department = await _UnitOfWork._departmentService.GetDepartmentByIdAsync(id.Value);
 
-    [HttpGet]
-    // Action to display parent departments of a department
-    public async Task<IActionResult> ParentDepartments(int id)
-    {
-        var parentDepartments = await _UnitOfWork._departmentService.GetParentDepartmentsAsync(id);
-        return View(parentDepartments);
-    }
+            if (department == null)
+            {
+                return NotFound();
+            }
 
-    [HttpGet]
-    // Action to display sub-departments of a department
-    public async Task<IActionResult> SubDepartments(int id)
-    {
-        var subDepartments = await _UnitOfWork._departmentService.GetSubDepartmentsAsync(id);
-        return View(subDepartments);
+            return View(department);
+        }
+
+        // GET: Departments/Create
+        public IActionResult Create()
+        {
+            ViewData["ParentDepartmentId"] = new SelectList(_UnitOfWork._departmentService.GetDepartmentsAsync().Result, "Id", "Name");
+            return View();
+        }
+
+        // POST: Departments/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id,Name,Logo,ParentDepartmentId")] DepartmentVm departmentVm)
+        {
+            if (ModelState.IsValid)
+            {
+                await _UnitOfWork._departmentService.CreateDepartmentAsync(departmentVm);
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["ParentDepartmentId"] = new SelectList(_UnitOfWork._departmentService.GetDepartmentsAsync().Result, "Id", "Name", departmentVm.ParentDepartmentId);
+            return View(departmentVm);
+        }
+
+        // GET: Departments/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var department = await _UnitOfWork._departmentService.GetDepartmentByIdAsync(id.Value);
+
+            if (department == null)
+            {
+                return NotFound();
+            }
+
+            ViewData["ParentDepartmentId"] = new SelectList(_UnitOfWork._departmentService.GetDepartmentsAsync().Result, "Id", "Name", department.ParentDepartmentId);
+            return View(department);
+        }
+
+        // POST: Departments/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Logo,ParentDepartmentId")] DepartmentVm departmentVm)
+        {
+            if (id != departmentVm.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _UnitOfWork._departmentService.UpdateDepartmentAsync(departmentVm);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!await DepartmentExists(departmentVm.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["ParentDepartmentId"] = new SelectList(_UnitOfWork._departmentService.GetDepartmentsAsync().Result, "Id", "Name", departmentVm.ParentDepartmentId);
+            return View(departmentVm);
+        }
+
+        // GET: Departments/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var department = await _UnitOfWork._departmentService.GetDepartmentByIdAsync(id.Value);
+
+            if (department == null)
+            {
+                return NotFound();
+            }
+
+            return View(department);
+        }
+
+        // POST: Departments/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            await _UnitOfWork._departmentService.DeleteDepartmentAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        private async Task<bool> DepartmentExists(int id)
+        {
+            var department = await _UnitOfWork._departmentService.GetDepartmentByIdAsync(id);
+            return department != null;
+        }
     }
-}

@@ -1,34 +1,33 @@
-﻿@model List<ViewModel.DepartmentVm>
-
+﻿@model IEnumerable<ViewModel.DepartmentVm>
+ 
 @{
     ViewData["Title"] = "Departments";
 }
 
-<h1>Departments</h1>
+<h2>Departments</h2>
 
 <table class="table">
     <thead>
         <tr>
             <th>Name</th>
             <th>Logo</th>
-            <th></th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var department in Model)
+        @foreach (var item in Model)
         {
             <tr>
-                <td>@department.Name</td>
+                <td>@item.Name</td>
+                <td><img src="@item.Logo" alt="Logo" width="50" height="50" /></td>
                 <td>
-                    @if (!string.IsNullOrEmpty(department.Logo))
-                    {
-                        <img src="@department.Logo" alt="@department.Name" width="50" height="50" />
-                    }
-                </td>
-                <td>
-                    <a href="@Url.Action("Details", "Department", new { id = department.DepartmentID })">View Details</a>
-                </td>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info">Details</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-warning">Edit</a>
+                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+<a asp-action="Create" class="btn btn-primary">Create New Department</a>
+

@@ -1,22 +1,35 @@
-﻿@model ViewModel.DepartmentDetailsViewModel
+﻿@model ViewModel.DepartmentVm
 
-@* <h1>@Model.Department.Name</h1>
-<img src="@Model.Department.Logo" alt="Department Logo" /> *@
+@{
+    ViewData["Title"] = "Department Details";
+}
 
-<h2>Parent Departments</h2>
-<ul>
-    @foreach (var parent in Model.ParentDepartments)
+<h2>Department Details</h2>
+
+<div>
+    <h4>@Model.Name</h4>
+    <img src="@Model.Logo" alt="Logo" width="100" height="100" />
+</div>
+
+<div>
+    <h4>Sub-Departments</h4>
+    <ul>
+        @foreach (var subDept in Model.SubDepartments)
+        {
+            <li>@subDept.Name</li>
+        }
+    </ul>
+</div>
+
+<div>
+    <h4>Parent Departments</h4>
+    @if (Model.ParentDepartmentId.HasValue)
     {
-        <li>@parent.Name</li>
-        <a href="@Url.Action("ParentDepartments", "Department", new { id = parent.DepartmentID })"> Details</a>
+        <ul>
+            <li>@Model.ParentDepartmentName</li>
+        </ul>
     }
-</ul>
+</div>
 
-<h2>Sub-Departments</h2>
-<ul>
-    @foreach (var subDepartment in Model.SubDepartments)
-    {
-        <li>@subDepartment.Name</li>
-        <a href="@Url.Action("SubDepartments", "Department", new { id = subDepartment.DepartmentID })">  Details</a>
-    }
-</ul>
+<a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Edit</a>
+<a asp-action="Index" class="btn btn-secondary">Back to List</a>
