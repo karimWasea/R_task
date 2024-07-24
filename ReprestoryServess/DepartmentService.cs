@@ -1,4 +1,4 @@
-﻿using DataAccessLayer;
+﻿    using DataAccessLayer;
 
 using DataACesslayer;
 
@@ -103,15 +103,7 @@ namespace ReprestoryServess
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteDepartmentAsync(int id)
-        {
-            var department = await _context.Departments.FindAsync(id);
-
-            if (department == null) return;
-
-            _context.Departments.Remove(department);
-            await _context.SaveChangesAsync();
-        }
+      
     }
 
 }

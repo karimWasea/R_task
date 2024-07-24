@@ -10,6 +10,8 @@ using ReprestoryServess;
 
 using System.Configuration;
 
+using ViewModel.MailSeting;
+
 namespace R_task
 {
     public class Program
@@ -24,8 +26,10 @@ namespace R_task
             IServiceCollection serviceCollection =
                 builder.Services.AddDbContext<ApplicationDBcontext>(options =>
                 options.UseSqlServer(connectionString));
+            builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("MailSettings"));
             builder.Services.AddTransient<DepartmentService>();
             builder.Services.AddTransient<UnitOfWork>();
+            builder.Services.AddTransient<MailingService>();
 
             var app = builder.Build();
 

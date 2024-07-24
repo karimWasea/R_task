@@ -11,15 +11,17 @@ namespace ReprestoryServess
 
         public readonly ApplicationDBcontext _context;
 
-        public UnitOfWork(ApplicationDBcontext context , DepartmentService departmentService)
+        public UnitOfWork(ApplicationDBcontext context , DepartmentService departmentService,MailingService mailingService)
         {
             _departmentService = departmentService;
                         _context = context;
+            _mailingService = mailingService;
         }
 
         private bool disposed = false;
 
         public IDepartmentService _departmentService { get; }
+        public IMailingService _mailingService { get; }
 
         protected virtual void Dispose(bool disposing)
         {

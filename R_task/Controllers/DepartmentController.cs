@@ -135,15 +135,7 @@ public class DepartmentController : Controller
 
             return View(department);
         }
-
-        // POST: Departments/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            await _UnitOfWork._departmentService.DeleteDepartmentAsync(id);
-            return RedirectToAction(nameof(Index));
-        }
+ 
 
         private async Task<bool> DepartmentExists(int id)
         {

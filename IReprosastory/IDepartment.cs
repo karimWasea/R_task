@@ -8,8 +8,7 @@ namespace IReprosastory
         Task<DepartmentVm> GetDepartmentByIdAsync(int id);
         Task CreateDepartmentAsync(DepartmentVm departmentVm);
         Task UpdateDepartmentAsync(DepartmentVm departmentVm);
-        Task DeleteDepartmentAsync(int id);
-    }
+     }
 }
 
 
