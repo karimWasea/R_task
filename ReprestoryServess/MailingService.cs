@@ -31,31 +31,38 @@ namespace ReprestoryServess
 
         public async Task SendEmailAsync(MailRequestVM mailRequestVM)
         {
+            var currentDateTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            var emailBody =  $"{mailRequestVM.Body}\n\t Date-Time : {currentDateTime}";
             var email = new MimeMessage
             {
                 Sender = MailboxAddress.Parse(_mailSettings.Email),
-                Subject = mailRequestVM.Subject,   
+                Subject = mailRequestVM.Subject,
+                Body = new TextPart("plain")
+                {
+                    Text = emailBody
+                 }
+
             };
 
             email.To.Add(MailboxAddress.Parse(mailRequestVM.ToEmail));
 
             var builder = new BodyBuilder();
 
-            if (mailRequestVM.Attachments != null)
-            {
-                byte[] fileBytes;
-                foreach (var file in mailRequestVM.Attachments)
-                {
-                    if (file.Length > 0)
-                    {
-                        using var ms = new MemoryStream();
-                        file.CopyTo(ms);
-                        fileBytes = ms.ToArray();
+            //if (mailRequestVM.Attachments != null)
+            //{
+            //    byte[] fileBytes;
+            //    foreach (var file in mailRequestVM.Attachments)
+            //    {
+            //        if (file.Length > 0)
+            //        {
+            //            using var ms = new MemoryStream();
+            //            file.CopyTo(ms);
+            //            fileBytes = ms.ToArray();
 
-                        builder.Attachments.Add(file.FileName, fileBytes, ContentType.Parse(file.ContentType));
-                    }
-                }
-            }
+            //            builder.Attachments.Add(file.FileName, fileBytes, ContentType.Parse(file.ContentType));
+            //        }
+            //    }
+            //}
 
             builder.HtmlBody = mailRequestVM.Body;
             email.Body = builder.ToMessageBody();

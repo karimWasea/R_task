@@ -48,22 +48,29 @@ public class DepartmentController : Controller
         // GET: Departments/Create
         public IActionResult Create()
         {
-            ViewData["ParentDepartmentId"] = new SelectList(_UnitOfWork._departmentService.GetDepartmentsAsync().Result, "Id", "Name");
-            return View();
+        var departmentVm = new DepartmentVm();
+        departmentVm.ALLParentDepartment = _UnitOfWork.Ilookup.GetAllParentDepartments();
+
+        return View(departmentVm);
         }
 
         // POST: Departments/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Logo,ParentDepartmentId")] DepartmentVm departmentVm)
+        public async Task<IActionResult> Create( DepartmentVm departmentVm)
+    {
+        if (_UnitOfWork._departmentService.DepartmentExists(departmentVm))
         {
-            if (ModelState.IsValid)
+            return NotFound();
+        }
+        if (ModelState.IsValid)
             {
                 await _UnitOfWork._departmentService.CreateDepartmentAsync(departmentVm);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ParentDepartmentId"] = new SelectList(_UnitOfWork._departmentService.GetDepartmentsAsync().Result, "Id", "Name", departmentVm.ParentDepartmentId);
-            return View(departmentVm);
+        departmentVm.ALLParentDepartment = _UnitOfWork.Ilookup.GetAllParentDepartments();
+
+        return View(departmentVm);
         }
 
         // GET: Departments/Edit/5
@@ -80,8 +87,8 @@ public class DepartmentController : Controller
             {
                 return NotFound();
             }
-
-            ViewData["ParentDepartmentId"] = new SelectList(_UnitOfWork._departmentService.GetDepartmentsAsync().Result, "Id", "Name", department.ParentDepartmentId);
+        department.ALLParentDepartment=_UnitOfWork.Ilookup.GetAllParentDepartments();
+        ;
             return View(department);
         }
 
@@ -103,7 +110,7 @@ public class DepartmentController : Controller
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await DepartmentExists(departmentVm.Id))
+                    if (_UnitOfWork._departmentService .DepartmentExists(departmentVm))
                     {
                         return NotFound();
                     }
@@ -114,32 +121,12 @@ public class DepartmentController : Controller
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["ParentDepartmentId"] = new SelectList(_UnitOfWork._departmentService.GetDepartmentsAsync().Result, "Id", "Name", departmentVm.ParentDepartmentId);
-            return View(departmentVm);
+        departmentVm.ALLParentDepartment = _UnitOfWork.Ilookup.GetAllParentDepartments();
+
+        return View(departmentVm);
         }
-
-        // GET: Departments/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var department = await _UnitOfWork._departmentService.GetDepartmentByIdAsync(id.Value);
-
-            if (department == null)
-            {
-                return NotFound();
-            }
-
-            return View(department);
-        }
+     
  
 
-        private async Task<bool> DepartmentExists(int id)
-        {
-            var department = await _UnitOfWork._departmentService.GetDepartmentByIdAsync(id);
-            return department != null;
-        }
+       
     }

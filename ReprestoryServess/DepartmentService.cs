@@ -103,7 +103,12 @@ namespace ReprestoryServess
             await _context.SaveChangesAsync();
         }
 
-      
+        public bool DepartmentExists(DepartmentVm departmentVm)
+        {
+            var department =   _context.Departments.Any(  i=>i.Id!= departmentVm.Id && i.Name== departmentVm.Name&& i.Logo == departmentVm.Logo);
+             return department ;
+
+        }
     }
 
 }

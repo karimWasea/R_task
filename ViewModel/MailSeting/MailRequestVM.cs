@@ -15,8 +15,10 @@ namespace ViewModel.MailSeting
         public string ToEmail { get; set; }
         [Required]
         public string Subject { get; set; }
+        public  DateTime  DateTime { get; set; }
         [Required]
         public string Body { get; set; }
-        public IList<IFormFile> Attachments { get; set; }
+        //public IList<IFormFile> Attachments { get; set; }
+         
     }
 }

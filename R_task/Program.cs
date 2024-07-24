@@ -30,8 +30,9 @@ namespace R_task
             builder.Services.AddTransient<DepartmentService>();
             builder.Services.AddTransient<UnitOfWork>();
             builder.Services.AddTransient<MailingService>();
-
-            var app = builder.Build();
+            builder.Services.AddHostedService<ReminderSerivce>();    
+            builder.Services.AddTransient<LookupService>();    
+             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())

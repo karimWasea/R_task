@@ -18,7 +18,7 @@ public class MailingController : Controller
     [HttpGet]
     public IActionResult SendMail()
     {
-        return View(new MailRequestVM());
+        return View();
     }
 
     [HttpPost]
